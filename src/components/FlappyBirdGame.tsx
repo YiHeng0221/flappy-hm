@@ -1,47 +1,34 @@
 import { useEffect, useRef, useCallback } from "react";
-// PixiJS v8
-import { Application, Graphics, Text, Sprite, Texture, Assets, Container, ParticleContainer } from "pixi.js";
+import { Application, Graphics, Sprite, Texture, Assets, Container, Ticker } from "pixi.js";
 import { GRAVITY, PIPE_INTERVAL, PIPE_SPEED, PIPE_GAP, DAY_COLOR } from "../constants/gameConfig";
 import { CloudSystem } from "./CloudSystem";
 import { DayNightCycle } from "./DayNightCycle";
 import { GameUI } from "./GameUI";
 import { useParticleSystem } from "../hooks/useParticleSystem";
 import { useGameState } from "../hooks/useGameState";
-import { useGameControls } from "../hooks/useGameControls";
 import { checkBirdPipeCollision, checkBirdGroundCollision } from "../utils/collisionDetection";
 
-// 遊戲設定常數
-const JUMP_VELOCITY = -8; // 跳躍初速度
 
-// 粒子系統設定
-const PARTICLE_COUNT = 50; // 粒子數量
-const PARTICLE_LIFETIME = 60; // 粒子生命週期（幀數）
-const PARTICLE_SPEED = 2; // 粒子移動速度
-
-// 背景設定
-const CLOUD_COUNT = 5; // 雲朵數量
-const CLOUD_SPEED = 0.5; // 雲朵移動速度
-
-// 晝夜循環設定
-const DAY_NIGHT_CYCLE = 3000; // 晝夜循環時間（幀數）
-const NIGHT_COLOR = 0x000033; // 夜晚顏色（深藍）
 
 // RWD: 畫布高度 = 視窗高度，寬度 = 視窗寬度
 export default function FlappyBirdGame() {
   const containerRef = useRef<HTMLDivElement>(null);
   const appRef = useRef<Application | null>(null);
-  const tickerRef = useRef<any>(null);
+  const tickerRef = useRef<Ticker | null>(null);
   const gameContainerRef = useRef<Container | null>(null);
   const gameLoopRef = useRef<(() => void) | null>(null);
-  const isInitializedRef = useRef(false);
-  const gameStateRef = useRef({
+  const isInitializedRef = useRef<boolean>(false);
+  const gameStateRef = useRef<{
+    score: number;
+    isDead: boolean;
+    velocity: number;
+  }>({
     score: 0,
     isDead: false,
     velocity: 0
   });
 
   const {
-    gameState: { score, isDead, velocity },
     incrementScore,
     setVelocity,
     die,
@@ -59,11 +46,7 @@ export default function FlappyBirdGame() {
     gameStateRef.current.velocity = 0;
   }, [restart]);
 
-  const { handlePointerDown } = useGameControls({
-    isDead,
-    onJump: handleJump,
-    onRestart: handleRestart
-  });
+  const { createParticleBurst, updateParticles, setParticleContainer } = useParticleSystem(null);
 
   useEffect(() => {
     let pipeTimer: number;
@@ -125,9 +108,9 @@ export default function FlappyBirdGame() {
       containerRef.current.appendChild(app.canvas as unknown as Node);
 
       // 場景大小
-      let width = app.renderer.width;
-      let height = app.renderer.height;
-      let groundY = height - 80;
+      const width = app.renderer.width;
+      const height = app.renderer.height;
+      const groundY = height - 80;
 
       // 創建遊戲主容器
       const gameContainer = new Container();
@@ -146,12 +129,12 @@ export default function FlappyBirdGame() {
       // 創建粒子容器
       const particleContainer = new Container();
       gameContainer.addChild(particleContainer);
+      setParticleContainer(particleContainer);
 
       // 初始化各個系統
       const cloudSystem = new CloudSystem({ container: backgroundContainer, width, height });
       const dayNightCycle = new DayNightCycle(app);
       const gameUI = new GameUI({ container: uiContainer, width, height });
-      const { createParticleBurst, updateParticles } = useParticleSystem(particleContainer);
 
       // 地面
       const ground = new Graphics();
@@ -162,7 +145,7 @@ export default function FlappyBirdGame() {
       // 建立鳥
       await Assets.load('/heromama.png');
       const birdTexture = Texture.from('/heromama.png');
-      let bird = new Sprite(birdTexture);
+      const bird = new Sprite(birdTexture);
       bird.anchor.set(0.5);
       bird.scale.set(1);
       bird.x = width * 0.35;
@@ -274,7 +257,7 @@ export default function FlappyBirdGame() {
       isInitializedRef.current = false;
       cleanup();
     };
-  }, []); // 只在組件掛載和卸載時執行
+  }, [die, handleJump, handleRestart, incrementScore, setVelocity, createParticleBurst, updateParticles, setParticleContainer]);
 
   return (
     <div ref={containerRef} className="relative w-full h-[100dvh] overflow-hidden" />
