@@ -1,36 +1,33 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+這是一個用 [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app) 建立的 [Next.js](https://nextjs.org) 專案。
 
-## Getting Started
+## 快速開始
 
-First, run the development server:
+首先，安裝依賴：
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+啟動開發伺服器：
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+pnpm dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+打開瀏覽器並前往 [http://localhost:3000](http://localhost:3000) 查看效果。
 
-## Learn More
+你可以編輯 `app/page.tsx` 來開始開發，頁面會自動熱更新。
 
-To learn more about Next.js, take a look at the following resources:
+本專案使用 [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) 自動最佳化與載入 [Geist](https://vercel.com/font) 字型。
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 更多資源
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- [Next.js 官方文件](https://nextjs.org/docs)
+- [Next.js 互動式教學](https://nextjs.org/learn)
+- [Next.js GitHub](https://github.com/vercel/next.js)
 
-## Deploy on Vercel
+## 部署
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+最簡單的部署方式是使用 [Vercel 平台](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme)。
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+更多部署細節請參考 [Next.js 部署文件](https://nextjs.org/docs/app/building-your-application/deploying)。
