@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useRef, useCallback } from "react";
 import { Application, Graphics, Sprite, Texture, Assets, Container, Ticker } from "pixi.js";
 import { GRAVITY, PIPE_INTERVAL, PIPE_SPEED, PIPE_GAP, DAY_COLOR } from "../constants/gameConfig";
