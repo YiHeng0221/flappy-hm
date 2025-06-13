@@ -20,6 +20,7 @@ export default function FlappyBirdGame() {
   const gameContainerRef = useRef<Container | null>(null);
   const gameLoopRef = useRef<(() => void) | null>(null);
   const isInitializedRef = useRef<boolean>(false);
+  const gameUIRef = useRef<GameUI | null>(null);
   const gameStateRef = useRef<{
     score: number;
     isDead: boolean;
@@ -46,6 +47,10 @@ export default function FlappyBirdGame() {
     restart();
     gameStateRef.current.isDead = false;
     gameStateRef.current.velocity = 0;
+    gameStateRef.current.score = 0;
+    if (gameUIRef.current) {
+      gameUIRef.current.updateScore(0);
+    }
   }, [restart]);
 
   const { createParticleBurst, updateParticles, setParticleContainer } = useParticleSystem(null);
@@ -137,6 +142,7 @@ export default function FlappyBirdGame() {
       const cloudSystem = new CloudSystem({ container: backgroundContainer, width, height });
       const dayNightCycle = new DayNightCycle(app);
       const gameUI = new GameUI({ container: uiContainer, width, height });
+      gameUIRef.current = gameUI;
 
       // 地面
       const ground = new Graphics();
@@ -162,12 +168,39 @@ export default function FlappyBirdGame() {
       function spawnPipe() {
         const gapY = Math.random() * (height - PIPE_GAP - 200) + 100;
         const topPipe = new Graphics();
+        const bottomPipe = new Graphics();
+
+        // 繪製管子主體
         topPipe.rect(0, 0, 60, gapY - PIPE_GAP / 2).fill(0x988C80);
+        bottomPipe.rect(0, 0, 60, height - gapY - PIPE_GAP / 2 - 80).fill(0x988C80);
+
+        // 添加窗戶
+        const windowSize = 12;
+        const windowSpacing = 20;
+        const windowRows = Math.floor((gapY - PIPE_GAP / 2) / windowSpacing);
+        const windowCols = 2;
+
+        // 在頂部管子添加窗戶
+        for (let row = 0; row < windowRows; row++) {
+          for (let col = 0; col < windowCols; col++) {
+            const windowX = 10 + col * 20;
+            const windowY = 10 + row * windowSpacing;
+            topPipe.rect(windowX, windowY, windowSize, windowSize).fill(0xFFFF00);
+          }
+        }
+
+        // 在底部管子添加窗戶
+        const bottomWindowRows = Math.floor((height - gapY - PIPE_GAP / 2 - 80) / windowSpacing);
+        for (let row = 0; row < bottomWindowRows; row++) {
+          for (let col = 0; col < windowCols; col++) {
+            const windowX = 10 + col * 20;
+            const windowY = 10 + row * windowSpacing;
+            bottomPipe.rect(windowX, windowY, windowSize, windowSize).fill(0xFFFF00);
+          }
+        }
+
         topPipe.x = width + 60;
         topPipe.y = 0;
-
-        const bottomPipe = new Graphics();
-        bottomPipe.rect(0, 0, 60, height - gapY - PIPE_GAP / 2 - 80).fill(0x988C80);
         bottomPipe.x = width + 60;
         bottomPipe.y = gapY + PIPE_GAP / 2;
 
